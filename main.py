@@ -38,7 +38,7 @@ print("Loading language model...")
 language_model = util.language_model # once this is ready to deploy should be using a larger model
 
 print("Loading word embeddings...")
-word_embeddings = util.load_word_embeddings('glove.6B.300d.txt') # use 42B common crawl when ready for prod, possibly just import directly from spaCy
+word_embeddings = util.load_word_embeddings('word_embeddings/glove.6B.300d.txt') # use 42B common crawl when ready for prod, possibly just import directly from spaCy
 print("Word embeddings and language model loaded!")
 
 competitor_list_files = []
