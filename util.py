@@ -59,6 +59,7 @@ def get_freq(item):
 	"""
 	return item[1]
 
+
 def word_freq(tokens):
 	"""
 	Given a list of tokens (words) in which there are assumed to be many repetitions,
@@ -88,14 +89,20 @@ def filter_competitor_list(csv_file,traffic_threshold):
 	df = pd.read_csv(csv_file)
 	df = df[df['Organic Traffic'] <= traffic_threshold]
 	n_rows = df.shape[0]
-	if n_rows <= 100:
-		return df
-	elif n_rows <= 1000:
-		df = df[df['Competitor Relevance'] > 0.01]
-		return df
-	else:
-		df = df[df['Competitor Relevance'] > 0.025]
-		return df
+	thresh = 0.00001
+	while n_rows > 1000:
+		df = df[df['Competitor Relevance'] > thresh] 
+		thresh += 0.000001
+		n_rows = df.shape[0]
+	return df
+
+
+#	elif n_rows <= 1000:
+#		df = df[df['Competitor Relevance'] > 0.01]
+#		return df
+#	else:
+#		df = df[df['Competitor Relevance'] > 0.025]
+#		return df
 
 
 def is_job_board(soup):

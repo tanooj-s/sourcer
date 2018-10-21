@@ -33,4 +33,19 @@ def get_simple_projection(in_phrase,words,embeddings):
 ## how to penalize? has to be from the b vector
 
 
+def final_score(s1,s2):
+	"""
+	s1,s2 are float inputs or None. Return the mean of the two scores unless one is significantly higher than the other.
+	(0.25 may be variable, function of each dataset)
+	"""
+	if isinstance(s1,float) == False:
+		return s2
+	if isinstance(s2,float) == False:
+		return s1
+	if (s1 - s2 > 0.25):
+		return (2*s1 + s2)/3
+	elif (s2 - s1 > 0.25):
+		return (2*s2 + s1)/3
+	else:
+		return (s1+s2)/2
 
