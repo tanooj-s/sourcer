@@ -45,6 +45,7 @@ competitor_list_files = []
 competitor_dataframes = []
 path = "competitor_lists/"
 
+# make this part smarter at pulling out a column of domains from any generic csv
 for filename in glob.glob(os.path.join(path, '*.csv')):
 	competitor_list_files.append(filename)
 print ("There are " + str(len(competitor_list_files)) + " competitor list files to extract information from.")
@@ -106,8 +107,8 @@ print("Calculating website metadata scores...")
 df['score_metadata'] = df['meta text'].progress_apply(lambda x: scorer.get_simple_projection(in_phrase=in_phrase,words=x,embeddings=word_embeddings))
 print("Calculating net relevance scores of websites...")
 #df['score_net'] = df[['score_homepage','score_metadata']].progress_apply(lambda row: (row['score_homepage'] + row['score_metadata'])/2, axis=1)
-df['score_net'] = df[['score_homepage','score_metadata']].mean(axis=1,skipna=False)
-df['score_side'] = df[['score_homepage','score_metadata']].progress_apply(lambda row: scorer.final_score(s1=row['score_homepage'],s2=row['score_metadata']), axis=1)
+#df['score_net'] = df[['score_homepage','score_metadata']].mean(axis=1,skipna=False)
+df['score_net'] = df[['score_homepage','score_metadata']].progress_apply(lambda row: scorer.final_score(s1=row['score_homepage'],s2=row['score_metadata']), axis=1)
 
 #df.drop(labels=['meta text','homepage keywords'], axis=1, inplace=True)
 # save space if we don't save this data but might be useful to keep

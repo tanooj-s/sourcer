@@ -122,9 +122,9 @@ def get_meta_text(meta_dict):
 	"""
 	if meta_dict is None:
 		return None
-	descriptions = list(set(meta_dict['descriptions']))
-	titles = list(set(meta_dict['titles']))
-	keywords = list(set(meta_dict['keywords']))
+	descriptions = list((meta_dict['descriptions']))
+	titles = list((meta_dict['titles']))
+	keywords = list(meta_dict['keywords'])
 	text_data = []
 	if len(descriptions) > 0:
 		for d in descriptions:
@@ -144,17 +144,15 @@ def get_homepage_keywords(soup):
 	"""
 	if soup is None:
 		return None
-
 	element_types = ['h1','h2','h3','h4','p','li','h5','h6','div','article',
-					'header','footer','blockquote','figcaption','menuitem']  
-	# there may be other element types that you can add here
+					'header','footer','blockquote','figcaption','menuitem']  # there may be other element types that you can add here
 	element_tokens = []
 	for element_type in element_types:
 		for e in soup.find_all(element_type):
 			if e is not None:
 				if e.string is not None:
 					element_tokens.append(util.tokenize(str(e.string)))
-		# element_words is a list of lists of words, grouped together by which HTML element type they were
-		# they need to be unwrapped
+	# element_words is a list of lists of words, grouped together by which HTML element type they were
+	# they need to be unwrapped
 	flattened_tokens = [token for sublist in element_tokens for token in sublist]
 	return util.word_freq(flattened_tokens)

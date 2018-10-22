@@ -4,8 +4,6 @@ import ast
 import util
 
 
-
-
 def get_simple_projection(in_phrase,words,embeddings): 
 	# word embeddings is assumed to be a dict of {word: embedding} pairs of type {string: np array}
 	# words is assumed to be a list of lists of form [word, freq], types - [str, int]
@@ -29,14 +27,11 @@ def get_simple_projection(in_phrase,words,embeddings):
 	score = np.dot(a,b) # weighted inner product by frequency
 	return score
 
-## add functionality for "negative" keywords but don't subtract them without adding a multiplier with value < 1
-## how to penalize? has to be from the b vector
-
 
 def final_score(s1,s2):
 	"""
 	s1,s2 are float inputs or None. Return the mean of the two scores unless one is significantly higher than the other.
-	(0.25 may be variable, function of each dataset)
+	(threshold may be a function of each dataset, need to check)
 	"""
 	if isinstance(s1,float) == False:
 		return s2

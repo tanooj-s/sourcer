@@ -17,6 +17,7 @@ def load_word_embeddings(input_file):
 			model[word] = embedding
 		return model
 
+
 def tokenize(text):
 	"""
 	From input string, add words to the list of tokens if they are not stop words and their parts-of-speech
@@ -51,6 +52,7 @@ def get_entities(text):
 	for ent in doc.ents:
 		entities.append([ent.text, ent.label_])
 	return entities
+
 
 def get_freq(item):
 	"""
@@ -89,13 +91,14 @@ def filter_competitor_list(csv_file,traffic_threshold):
 	df = pd.read_csv(csv_file)
 	df = df[df['Organic Traffic'] <= traffic_threshold]
 	n_rows = df.shape[0]
-	thresh = 0.00001
+
+	# won't need this once there is a dedicated machine with high memory
+	thresh = 0.0001
 	while n_rows > 1000:
 		df = df[df['Competitor Relevance'] > thresh] 
-		thresh += 0.000001
+		thresh += 0.0001
 		n_rows = df.shape[0]
 	return df
-
 
 #	elif n_rows <= 1000:
 #		df = df[df['Competitor Relevance'] > 0.01]
