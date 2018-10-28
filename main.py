@@ -57,18 +57,18 @@ df = pd.concat(competitor_dataframes)
 df.drop_duplicates(subset=['Domain'],inplace=True)
 print ("Deleted duplicates!")
 
+if df.columns.isin(['Competitor Relevance', 'Common Keywords']).any():
 # this block should hopefully not be necessary running on a remote machine with high RAM (at least 8GB)
-print("Increasing competitor relevance filter to reduce table size (avoid oom-killer).")
-n_rows = df.shape[0]
-filter_score = 0.01
-while n_rows > 3000:
-	df = df[df['Competitor Relevance'] > filter_score]
-	filter_score += 0.001
+	print("Increasing competitor relevance filter to reduce table size (avoid oom-killer).")
 	n_rows = df.shape[0]
-print("Final competitor relevance filter threshold - " + str(filter_score))
+	filter_score = 0.01
+	while n_rows > 3000:
+		df = df[df['Competitor Relevance'] > filter_score]
+		filter_score += 0.001
+		n_rows = df.shape[0]
+	print("Final competitor relevance filter threshold - " + str(filter_score))
 
-df.drop(labels=['Competitor Relevance','Common Keywords'], axis=1, inplace=True) # these will be different for a single site that appears in two separate competitor lists, since this data is not independent of the competitor list source we can get rid of it
-df.sort_values(by='Domain',inplace=True)
+	df.drop(labels=['Competitor Relevance','Common Keywords'], axis=1, inplace=True) # these will be different for a single site that appears in two separate competitor lists, since this data is not independent of the competitor list source we can get rid of it
 print (str(n_rows) + " websites to mine data from.")
 
 #websites_reached = 0
@@ -79,6 +79,7 @@ print("Got HTML content from " + str(n_rows - n_unreached) + "/" + str(n_rows) +
 
 df.dropna(subset=['soup'],axis=0,inplace=True) # drop domains that did not return any HTML
 
+df.sort_values(by='Domain',inplace=True)
 print("Retrieving metadata from HTML content...")
 df['metadata'] = df['soup'].progress_apply(extractor.get_meta_contents)
 print("Got metadata from " + str(n_rows - n_unreached) + " websites.")
@@ -101,17 +102,24 @@ if(job_board_search.lower() == 'y'):
 df.drop(labels='soup', axis=1, inplace=True)
 
 
-print("Calculating homepage keywords scores...")
-df['score_homepage'] = df['homepage keywords'].progress_apply(lambda x: scorer.get_simple_projection(in_phrase=in_phrase,words=x,embeddings=word_embeddings))
-print("Calculating website metadata scores...")
-df['score_metadata'] = df['meta text'].progress_apply(lambda x: scorer.get_simple_projection(in_phrase=in_phrase,words=x,embeddings=word_embeddings))
+print("Calculating homepage cosine similarity scores...")
+df['homepage_similarity'] = df['homepage keywords'].progress_apply(lambda x: scorer.get_similarity(in_phrase=in_phrase,words=x,embeddings=word_embeddings))
+print("Calculating metadata cosine similarity scores...")
+df['metadata_similarity'] = df['meta text'].progress_apply(lambda x: scorer.get_similarity(in_phrase=in_phrase,words=x,embeddings=word_embeddings))
+print("Calculating net relevance scores of websites...")
+
+print("Calculating homepage distance scores...")
+df['homepage_distance'] = df['homepage keywords'].progress_apply(lambda x: scorer.get_distance(in_phrase=in_phrase,words=x,embeddings=word_embeddings))
+print("Calculating metadata distance scores...")
+df['metadata_distance'] = df['meta text'].progress_apply(lambda x: scorer.get_distance(in_phrase=in_phrase,words=x,embeddings=word_embeddings))
+
 print("Calculating net relevance scores of websites...")
 #df['score_net'] = df[['score_homepage','score_metadata']].progress_apply(lambda row: (row['score_homepage'] + row['score_metadata'])/2, axis=1)
 #df['score_net'] = df[['score_homepage','score_metadata']].mean(axis=1,skipna=False)
-df['score_net'] = df[['score_homepage','score_metadata']].progress_apply(lambda row: scorer.final_score(s1=row['score_homepage'],s2=row['score_metadata']), axis=1)
+#df['score_net'] = df[['homepage_similarity','metadata_similarity']].progress_apply(lambda row: scorer.final_score(s1=row['homepage_similarity'],s2=row['metadata_similarity']), axis=1)
+#df['score_net'] = df[['homepage_similarity','metadata_similarity','homepage_distance','metadata_distance']].mean(axis=1,skipna=False)
+df['score_net'] = df[['homepage_similarity','metadata_similarity','homepage_distance','metadata_distance']].progress_apply(lambda row: scorer.inclusive_mean(lst=row,axis=1))
 
-#df.drop(labels=['meta text','homepage keywords'], axis=1, inplace=True)
-# save space if we don't save this data but might be useful to keep
 
 print('Ranking websites...')
 df.sort_values(by='score_net',ascending=False).to_csv(args.output_file)

@@ -15,6 +15,7 @@ def log_error(e):
 	print(e)
 
 
+
 def get_html_content(url):
 	"""
 	Attempts to get the content at 'url' by making an HTTP GET request. If the content-type
@@ -29,6 +30,8 @@ def get_html_content(url):
 						html_data = BeautifulSoup(resp.content, 'html.parser')
 						print("Found HTML content for " + str(url))
 						return html_data
+					elif resp.status_code != 200:
+						print("Non-standard {0} HTTP response from {1}".format(str(resp.status_code),str(resp.url)))
 					else:
 						print("No content returned from request to " + str(url))
 						return None
