@@ -8,8 +8,7 @@ When using this tool there should also be two subfolders (word_embeddings/ and c
 
 In order to use this tool, the user must have the NLP library spaCy already installed as well as the 'en_core_web_sm' language model already installed. spaCy can be 
 installed using either 'pip install -U spacy' or 'conda install -c conda-forge spacy'. Once the library is installed, the language model can be downloaded with 
-'python -m spacy download en_core_web_sm' (although larger language models will be used once this is ready to be deployed). Other Python libraries that this tool uses
- - requests, numpy, pandas, ast, tqdm, bs4, eventlet, idna.  
+'python -m spacy download en_core_web_sm' (although larger language models will be used once this is ready to be deployed). Other Python libraries that this tool uses are requests, numpy, pandas, ast, tqdm, bs4, eventlet and idna.  
 
 The user must add competitor list csv files from SEMrush to the competitor_lists/ directory before running the tool. These competitor lists are the primary (and 
 currently only) source of data this tool uses. However in the future this step can likely be automated as well.
