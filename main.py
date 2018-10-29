@@ -72,14 +72,13 @@ if df.columns.isin(['Competitor Relevance', 'Common Keywords']).any():
 print (str(n_rows) + " websites to mine data from.")
 
 #websites_reached = 0
-
+df.sort_values(by='Domain',inplace=True)
 df['soup'] = df['Domain'].progress_apply(extractor.get_html_content) # this line takes about 2/3 of the total running time
 n_unreached = df['soup'].isnull().sum() 
 print("Got HTML content from " + str(n_rows - n_unreached) + "/" + str(n_rows) + " websites.")
 
 df.dropna(subset=['soup'],axis=0,inplace=True) # drop domains that did not return any HTML
 
-df.sort_values(by='Domain',inplace=True)
 print("Retrieving metadata from HTML content...")
 df['metadata'] = df['soup'].progress_apply(extractor.get_meta_contents)
 print("Got metadata from " + str(n_rows - n_unreached) + " websites.")
@@ -118,7 +117,7 @@ print("Calculating net relevance scores of websites...")
 #df['score_net'] = df[['score_homepage','score_metadata']].mean(axis=1,skipna=False)
 #df['score_net'] = df[['homepage_similarity','metadata_similarity']].progress_apply(lambda row: scorer.final_score(s1=row['homepage_similarity'],s2=row['metadata_similarity']), axis=1)
 #df['score_net'] = df[['homepage_similarity','metadata_similarity','homepage_distance','metadata_distance']].mean(axis=1,skipna=False)
-df['score_net'] = df[['homepage_similarity','metadata_similarity','homepage_distance','metadata_distance']].progress_apply(lambda row: scorer.inclusive_mean(lst=row,axis=1))
+df['score_net'] = df[['homepage_similarity','metadata_similarity','homepage_distance','metadata_distance']].progress_apply(lambda row: scorer.inclusive_mean(lst=row), axis=1)
 
 
 print('Ranking websites...')

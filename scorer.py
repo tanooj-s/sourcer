@@ -65,6 +65,8 @@ def inclusive_mean(lst):
 		if (ob is not None) and (math.isnan(ob) == False):
 			nume += ob
 			deno += 1
+	if deno == 0:
+		return 0
 	return float(nume/deno)
 
 
