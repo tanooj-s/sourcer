@@ -24,9 +24,8 @@ This tool performs three main tasks - first, it consolidates all the websites in
 webaites. Second, it makes an HTTP request to each website in the consolidated list and if there is a good response extracts text data from each website. Finally, from
 the extracted text data, and using the pre-trained word embeddings, for each website it creates a 'website vector' that is a n-dimensional representation of what that
 website is about (dimensionality specified by whichever word embeddings you are using). Using a similar representation for the input phrase entered by the user, the 
-scorer.py script then uses cosine similarity to provide a real valued score between -1 and 1 for how relevant each website is to the input phrase. The websites are then
-sorted from highest to lowest score. Once this is completed the tool outputs a csv file with the text data, scores and whatever data was provided from SEMrush for each 
-website.
+scorer.py script then uses a combination of cosine similarity and Euclidean distance to provide a real valued score between -1 and 1 for how relevant each website is to the input phrase. The websites are then
+sorted from highest to lowest score. Once this is completed the tool outputs a csv file with the text data, scores and whatever data was provided from SEMrush for each website.
 
 
 ------USAGE------
